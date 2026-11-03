@@ -20,3 +20,10 @@ export const validateRegisterUser = [
 
     validationRes
 ]
+
+export const validateLoginUser = [
+    body("email").isEmail().withMessage("Invalid email") , 
+    body("password").notEmpty().withMessage("Enter the valid password"),
+
+    validationRes
+]

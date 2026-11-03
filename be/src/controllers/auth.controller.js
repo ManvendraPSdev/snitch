@@ -30,7 +30,7 @@ export const register = async (req , res)=>{
 
     try {
         
-        const existingUser = userModel.findOne({ $or : [{email} , {contact}] }); 
+        const existingUser = await userModel.findOne({ $or : [{email} , {contact}] }); 
 
         if(existingUser){
             console.log("User already Exists") ; 
@@ -53,4 +53,35 @@ export const register = async (req , res)=>{
         console.log(error) ; 
         return res.status(500).json({message : ""})
     }
+}
+
+export const login = async(req , res)=>{
+    const {email , password} = req.body ; 
+
+    const userExist = await userModel.findOne({email}) ; 
+    
+    if(!userExist){
+        res.status(404).json({
+            message : "User Not Found !!"
+        })
+    }
+
+    const isPasswordValid = await bcrypt.compare(password , userExist.password) ; 
+
+    if(!isPasswordValid){
+        res.status(403).json({
+            message : "Invalid Password !!"
+        })
+    }
+
+    // res.status(200).json({
+    //     sucess : true , 
+    //     message : "User login sucessfully !!" , 
+    //     user : {
+    //         email : email , 
+    //         password : password
+    //     }
+    // })
+
+    await createToken(user , req , "login Sucessfully") ;
 }
