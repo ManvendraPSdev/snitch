@@ -26,7 +26,7 @@ const createToken = async(user ,  res , message)=>{
 }
 
 export const register = async (req , res)=>{
-    const {email , password , contact , fullName} = req.body ; 
+    const {email , password , contact , fullName , isSeller} = req.body ; 
 
     try {
         
@@ -43,7 +43,8 @@ export const register = async (req , res)=>{
             email , 
             password , 
             contact , 
-            fullName
+            fullName , 
+            role : isSeller ? "seller" : "buyer"
         })
 
         await createToken(user , res , "User Registered Sucessfully") ; 
