@@ -11,5 +11,10 @@ export const useAuth = ()=>{
         dispatch(setUser(data.user))
     }
 
-    return {handelRegister}
+    async function handelLogin({email , password}){
+        const data = await login({email , password})
+        dispatch(setUser(data.user))
+    }
+
+    return {handelRegister , handelLogin}
 }
