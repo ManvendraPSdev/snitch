@@ -34,7 +34,7 @@ export const register = async (req , res)=>{
 
         if(existingUser){
             console.log("User already Exists") ; 
-            res.status(403).json({
+            return res.status(403).json({
                 message : "User Already Exists"
             })
         }
@@ -51,37 +51,33 @@ export const register = async (req , res)=>{
 
     } catch (error) {
         console.log(error) ; 
-        return res.status(500).json({message : ""})
+        return res.status(500).json({message : "Unable to register right now"})
     }
 }
 
 export const login = async(req , res)=>{
     const {email , password} = req.body ; 
 
-    const userExist = await userModel.findOne({email}) ; 
-    
-    if(!userExist){
-        res.status(404).json({
-            message : "User Not Found !!"
-        })
+    try {
+        const user = await userModel.findOne({email}) ;
+
+        if(!user){
+            return res.status(404).json({
+                message : "User Not Found !!"
+            })
+        }
+
+        const isPasswordValid = await user.comparePassword(password) ;
+
+        if(!isPasswordValid){
+            return res.status(403).json({
+                message : "Invalid Password !!"
+            })
+        }
+
+        await createToken(user , res , "Login Successfully") ;
+    } catch (error) {
+        console.log(error) ;
+        return res.status(500).json({message : "Unable to log in right now"})
     }
-
-    const isPasswordValid = await user.comparePassword(password ) ; 
-
-    if(!isPasswordValid){
-        res.status(403).json({
-            message : "Invalid Password !!"
-        })
-    }
-
-    // res.status(200).json({
-    //     sucess : true , 
-    //     message : "User login sucessfully !!" , 
-    //     user : {
-    //         email : email , 
-    //         password : password
-    //     }
-    // })
-
-    await createToken(user , req , "login Sucessfully") ;
 }
